@@ -5,7 +5,6 @@ import {
   TableCell,
   TableContainer,
   TableRow,
-  Input,
   TextField
 } from '@mui/material';
 
@@ -131,7 +130,7 @@ export default function Technical() {
                   onChange={e => handleChangeCodIp(e.target.value)}
                 >
                   {Object.entries(servers).map(([key, value]) => (
-                    <MenuItem value={key}>{value} - {key}</MenuItem>
+                    <MenuItem key={key} value={key}>{value} - {key}</MenuItem>
                   ))}
                 </Select>
               </FormControl>
