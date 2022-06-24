@@ -15,9 +15,7 @@ import {
   TableBody,
   TableCell,
   TableContainer,
-  TableRow,
-  Container,
-  Typography
+  TableRow
 } from '@mui/material';
 
 import ClearIcon from '@mui/icons-material/Clear';
@@ -100,6 +98,8 @@ function CreateQuestion() {
         <FormControl fullWidth>
           <InputLabel>Tipo de Pegunta</InputLabel>
           <Select
+            required
+            fullWidth
             id='des_categoria_pergunta'
             value={des_categoria_pergunta}
             label='Tipo de Pegunta'
@@ -115,6 +115,7 @@ function CreateQuestion() {
       <TableCell>
         <TextField
           required
+          fullWidth
           id='des_pergunta'
           label='Pergunta'
           onChange={e => handleChangePergunta(e.target.value)}
@@ -125,6 +126,7 @@ function CreateQuestion() {
       <TableCell>
         <TextField
           required
+          fullWidth
           id='des_resposta'
           label='Reposta'
           onChange={e => handleChangeResposta(e.target.value)}
