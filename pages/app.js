@@ -8,7 +8,7 @@ import Container from '@mui/material/Container';
 import { Input } from '@mui/material';
 import { useRef } from 'react';
 
-import readXlsxFile from 'read-excel-file'
+import readExcelPromo from '../services/readExcel'
 
 export default function App() {
 
@@ -16,16 +16,18 @@ export default function App() {
 
   const inputRef = useRef(null)
 
-  const handleChangeInputFile = () => {
-    readXlsxFile(inputRef.current.files[0]).then((rows) => {
-      console.log(rows)
-    })
+  const handleChangeInputFile = async () => {
+
+    const promo = await readExcelPromo(inputRef.current.files[0])
+    console.log(promo)
+
   }
 
   return (
     <Container>
-      <Input inputRef={inputRef}
+      <Input
         type="file"
+        inputRef={inputRef}
         inputProps={{ accept: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel' }}
         onChange={handleChangeInputFile}
       />
