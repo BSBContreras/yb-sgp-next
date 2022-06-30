@@ -9,6 +9,7 @@ import { Input } from '@mui/material';
 import { useRef } from 'react';
 
 import readExcelPromo from '../services/readExcel'
+import BridgeExcelToSgp from '../services/BridgeExcelToSgp';
 
 export default function App() {
 
@@ -17,10 +18,11 @@ export default function App() {
   const inputRef = useRef(null)
 
   const handleChangeInputFile = async () => {
-
-    const promo = await readExcelPromo(inputRef.current.files[0])
-    console.log(promo)
-
+    const [file] = inputRef.current.files
+    if (!file) return
+    const promos = await readExcelPromo(file)
+    const promotions = BridgeExcelToSgp(promos, {})
+    console.log(promotions)
   }
 
   return (
