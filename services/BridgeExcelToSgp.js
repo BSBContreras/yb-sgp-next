@@ -80,6 +80,80 @@ const get_cod_tipo_linha = {
   'LINX': 4337,
 }
 
+const get_region_from_ddd = {
+  '79': 'BA',
+  '77': 'BA',
+  '75': 'BA',
+  '74': 'BA',
+  '73': 'BA',
+  '71': 'BA',
+  '67': 'CO',
+  '68': 'CO',
+  '69': 'CO',
+  '91': 'CO',
+  '92': 'CO',
+  '93': 'CO',
+  '94': 'CO',
+  '95': 'CO',
+  '96': 'CO',
+  '97': 'CO',
+  '98': 'CO',
+  '99': 'CO',
+  '65': 'CO',
+  '64': 'CO',
+  '63': 'CO',
+  '62': 'CO',
+  '61': 'CO',
+  '66': 'CO',
+  '31': 'MG',
+  '32': 'MG',
+  '33': 'MG',
+  '34': 'MG',
+  '35': 'MG',
+  '37': 'MG',
+  '38': 'MG',
+  '81': 'NE',
+  '82': 'NE',
+  '83': 'NE',
+  '84': 'NE',
+  '89': 'NE',
+  '86': 'NE',
+  '87': 'NE',
+  '88': 'NE',
+  '85': 'NE',
+  '49': 'PR',
+  '48': 'PR',
+  '47': 'PR',
+  '46': 'PR',
+  '45': 'PR',
+  '44': 'PR',
+  '43': 'PR',
+  '41': 'PR',
+  '42': 'PR',
+  '23': 'RJ',
+  '21': 'RJ',
+  '22': 'RJ',
+  '24': 'RJ',
+  '27': 'RJ',
+  '28': 'RJ',
+  '29': 'RJ',
+  '26': 'RJ',
+  '25': 'RJ',
+  '51': 'RS',
+  '55': 'RS',
+  '53': 'RS',
+  '54': 'RS',
+  '14': 'SP',
+  '13': 'SP',
+  '12': 'SP',
+  '11': 'SP',
+  '15': 'SP',
+  '17': 'SP',
+  '18': 'SP',
+  '19': 'SP',
+  '16': 'SP'
+}
+
 const translate_questions = {
   "INTERNET": "COMPL. INTERNET",
   "MINUTOS OUTRAS OPERADORAS": "MINUTOS OUTRAS OP.",
@@ -364,7 +438,7 @@ const mount_regulation = (rows, promo) => {
   regulamento['sts_precendente'] = get_sts_precendente(rows)[0]
   regulamento['sts_cons_premios'] = get_sts_cons_premios(rows)[0]
   regulamento['sts_cons_quest'] = get_sts_cons_quest(rows)[0]
-  regulamento['des_regulamento'] = get_regulamento_longo(rows)[0]
+  regulamento['des_regulamento'] = get_regulamento_longo(rows)
   regulamento['des_breve_regulamento_promocao'] = get_regulamento_breve(rows)
   regulamento['regulamento_segmento'] = get_cod_segmentos(rows).map(cod => ({ 'cod': cod }))
   regulamento['regulamento_tipo_linha'] = get_cod_tipo_linhas(rows).map(cod => ({ 'cod': cod }))
@@ -387,9 +461,31 @@ const mount_volta_v = (rows, promo) => {
 }
 
 const mount_promotion_list = (rows, promo) => {
-  const lista_promocao = []
+  const lista_promocao = {}
 
   return { lista_promocao }
+}
+
+const get_regionais = (rows, promo) => {
+  const regionais_cod = {}
+  for (const { ddd } of promo.ddds) {
+    regionais_cod[get_region_from_ddd[ddd]] = {
+      "cod_regional": get_region_from_ddd[ddd],
+    }
+  }
+
+  const regionais = []
+  Object.entries(regionais_cod).forEach(([key, value]) => regionais.push(value))
+
+  return regionais
+}
+
+const mount_online_param = (rows, promo) => {
+  const parametro_online = {}
+
+  parametro_online['regionais'] = get_regionais(rows, promo);
+
+  return { parametro_online }
 }
 
 const SGP_BASE = {
@@ -411,6 +507,8 @@ const SGP_BASE = {
   'dtc_exclusao': '01/12/2050',
   'qtd_dias_dupl': 1,
   'id_grupo_promocao': 1,
+  'num_ordem': 1,
+  'des_dir_carga_recarga_out': '/sgp/PROMOCOES/NAT2008',
   'questionario': {
     'id_questionario': '',
     'sts_ativo': 'S',
@@ -418,7 +516,54 @@ const SGP_BASE = {
       'id_regulamento_promocao': '',
       'sts_ativo': 'S',
     }
-  }
+  },
+  "parametro_online": {
+    "id_parametro": "",
+    "cod_service_add": "mblTransAddPromotion",
+    "cod_service_remove": "mblTransRemovePromotion",
+    "cod_username": "SGP",
+    "id_interface": 1,
+    "id_legado_linha": 1,
+    "cod_premio_enviado": null,
+    "cod_comando": "7030",
+    "destinos": [
+      { "id_legado_destino": 1 },
+      { "id_legado_destino": 11 }
+    ],
+  },
+  "lista_promocao": {
+    "id_legado_linha": 1,
+    "des_observacao": "",
+    "sts_ativo": "S",
+    "acao": [
+      { "sts_acao": 1 },
+      { "sts_acao": 2 }
+    ],
+    "origem": [
+      { "id_legado_origem": 2 },
+      { "id_legado_origem": 12 },
+      { "id_legado_origem": 16 },
+      { "id_legado_origem": 17 },
+      { "id_legado_origem": 29 },
+      { "id_legado_origem": 2 },
+    ]
+  },
+  "volta_v": {
+    "sts_ativo": "S",
+    "sts_cadastro": "S",
+    "sts_ativacao": "N",
+    "sts_consulta": "N",
+    "sts_indicacao_erro": "N",
+    "origem": [
+      { "id_legado_origem": 2 },
+      { "id_legado_origem": 3 },
+      { "id_legado_origem": 4 },
+      { "id_legado_origem": 12 },
+      { "id_legado_origem": 16 },
+      { "id_legado_origem": 17 },
+      { "id_legado_origem": 29 }
+    ]
+  },
 }
 
 export default function BridgeExcelToSgp(promos, opt) {
@@ -430,11 +575,13 @@ export default function BridgeExcelToSgp(promos, opt) {
 
     let promo = {}
     promo = _.merge(promo, SGP_BASE)
+    promo = _.merge(promo, opt)
     promo = _.merge(promo, mount_header(rows, promo))
     promo = _.merge(promo, mount_questionnaire(rows, promo))
     promo = _.merge(promo, mount_regulation(rows, promo))
-    promo = _.merge(promo, mount_volta_v(rows, promo))
-    promo = _.merge(promo, mount_promotion_list(rows, promo))
+    // promo = _.merge(promo, mount_volta_v(rows, promo))
+    // promo = _.merge(promo, mount_promotion_list(rows, promo))
+    promo = _.merge(promo, mount_online_param(rows, promo))
 
     promotions[promo_name] = promo
   }

@@ -13,7 +13,7 @@ import IconButton from '@mui/material/IconButton';
 import InputLabel from '@mui/material/InputLabel';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
 
@@ -56,7 +56,7 @@ const servers = {
   '10.128.5.107': 'Produção'
 }
 
-export default function Technical() {
+export default function Technical({ handleChangeState }) {
 
   const [cod_ip, set_cod_ip] = useState(defaults.cod_ip.getDefault()) // PreProd Default
   const [num_porta, set_num_porta] = useState(defaults.num_porta.getDefault(cod_ip)) // 8004 Default
@@ -64,6 +64,16 @@ export default function Technical() {
   const [num_tent, set_num_tent] = useState(defaults.num_tent.getDefault(num_max_tent)) // 2 Default
   const [num_tempo_tent, set_num_tempo_tent] = useState(defaults.num_tempo_tent.getDefault()) // 2 Default
   const [num_tempo_timeout, set_num_tempo_timeout] = useState(defaults.num_tempo_timeout.getDefault()) // 2 Default
+
+  useEffect(() => {
+    if (handleChangeState) {
+      handleChangeState({
+        "parametro_online": {
+          cod_ip, num_porta, num_max_tent, num_tent, num_tempo_tent, num_tempo_timeout
+        }
+      })
+    }
+  }, [cod_ip, num_porta, num_max_tent, num_tent, num_tempo_tent, num_tempo_timeout])
 
   const handleChangeCodIp = cod_ip => {
     set_cod_ip(cod_ip)
