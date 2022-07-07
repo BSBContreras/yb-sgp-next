@@ -5,6 +5,7 @@ export const slice = createSlice({
   initialState: {
     promo: {
       cod_promocao: '',
+      cod_legado: '',
       des_promocao: '',
       dtc_inicial: null,
       dtc_final: null
@@ -20,6 +21,9 @@ export const slice = createSlice({
   reducers: {
     changeCodPromocao(state, { payload }) {
       return { ...state, promo: { ...state.promo, cod_promocao: payload } }
+    },
+    changeCodLegado(state, { payload }) {
+      return { ...state, promo: { ...state.promo, cod_legado: payload } }
     },
     changeDesPromocao(state, { payload }) {
       return { ...state, promo: { ...state.promo, des_promocao: payload } }
@@ -42,6 +46,7 @@ export const slice = createSlice({
 
 export const {
   changeCodPromocao,
+  changeCodLegado,
   changeDesPromocao,
   changeStartDate,
   changeFinalDate,

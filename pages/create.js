@@ -9,6 +9,7 @@ import Typography from '@mui/material/Typography';
 import Questionnaire from '../components/Questionnaire'
 import Technical from '../components/Technical';
 import General from '../components/General';
+import Regulation from '../components/Regulation';
 
 const steps = [
   'Informações Gerais',
@@ -20,7 +21,7 @@ const steps = [
 const components = [
   <General />,
   <Questionnaire />,
-  null,
+  <Regulation />,
   <Technical />
 ]
 
