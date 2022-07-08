@@ -1,33 +1,7 @@
-function searchSetName(sets, value) {
-  // encontrar qual o conjunto que o input pertence
-  for (let set_name in sets) {
-    if (sets[set_name].indexOf(value) >= 0) return set_name
-  }
-}
-
-export default function SetBelonging(sets, input) {
-  // contador
-  const counter = {}
-  for (let set_name in sets) counter[set_name] = 0
-
-  for (let value of input) {
-    const set_name = searchSetName(sets, value)
-    if (set_name) counter[set_name] = counter[set_name] + 1
-  }
-
-  // verificar qual o maior contador
-  let max_set = ''
-  for (let set_name in counter) {
-    if (counter[max_set]) {
-      max_set = Math.max(counter[max_set], counter[set_name]) > counter[max_set] ? set_name : max_set
-    } else {
-      max_set = set_name
-    }
-  }
-
+function get(sets, set_name, input) {
   const removed = []
   const addded = [...input]
-  for (let value of sets[max_set]) {
+  for (let value of sets[set_name]) {
     const index = addded.indexOf(value)
     if (index < 0) {
       // Identificando itens removidos
@@ -39,10 +13,23 @@ export default function SetBelonging(sets, input) {
   }
 
   return {
-    set_name: max_set,
+    set_name: set_name,
     included: addded,
     excluded: removed
   }
+}
+
+export default function SetBelonging(sets, input) {
+
+  let ret = { set_name: '', included: { length: Infinity }, excluded: { length: Infinity } }
+  for (let set_name in sets) {
+    const obj = get(sets, set_name, input)
+    if (obj.included.length + obj.excluded.length < ret.included.length + ret.excluded.length) {
+      ret = obj
+    }
+  }
+
+  return ret
 }
 
 const s = {
