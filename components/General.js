@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
@@ -19,6 +19,19 @@ import {
 
 import Grid from '@mui/material/Grid'
 import TextField from '@mui/material/TextField'
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemText from '@mui/material/ListItemText';
+import ListItemButton from '@mui/material/ListItemButton';
+import ListSubheader from '@mui/material/ListSubheader';
+import Chip from '@mui/material/Chip';
+import Stack from '@mui/material/Stack';
+import ArrowRightAltIcon from '@mui/icons-material/ArrowRightAlt';
+import CloseIcon from '@mui/icons-material/Close';
+
+import ButtonVivo from './styled/ButtonVivo'
+
+import SetBelonging from '../utils/SetBelonging';
 
 import { useDispatch, useSelector } from 'react-redux';
 import {
@@ -209,9 +222,12 @@ export default function General() {
   )
 }
 
-const padroes = {
-  'PADRAO_1': [1, 2, 3],
-  'PADRAO_2': [3, 4, 5],
+const patterns = {
+  'PADRAO_1': [11, 12, 13, 14, 15, 17, 18, 19, 22, 24, 25, 27, 28, 31, 32, 35, 37, 38, 51, 53, 54, 55, 64, 67, 73, 74, 75, 77, 79, 92, 93, 94, 95, 96],
+  'PADRAO_2': [21, 33, 34, 41, 43, 44, 45, 46, 47, 48, 49, 61, 62, 71, 91],
+  'AGRESSIVO': [42, 82, 83, 84, 87, 88, 89],
+  'SUPER_AGRESSIVO': [16, 63, 65, 66, 68, 69, 81, 85, 86, 97, 98, 99],
+  'SANTA_CATARINA': [47, 48, 49]
 }
 
 function AreaCode() {
@@ -222,7 +238,11 @@ function AreaCode() {
 
   const handleChangePattern = (pattern) => {
     setPattern(pattern)
-    setSelected(padroes[pattern])
+    if (areaCode.length === 0) {
+      setSelected(patterns[pattern])
+    } else {
+      setSelected(areaCode)
+    }
   }
 
   const handleChangeSelected = (select) => {
@@ -234,7 +254,12 @@ function AreaCode() {
     }
   }
 
-  const handleUsePattern = () => {
+  const handleRemoveAreaCode = () => {
+    setAreaCode([])
+    setSelected(patterns[pattern])
+  }
+
+  const handleAddAreaCode = () => {
     setAreaCode(prev => _.union(prev, selected))
   }
 
@@ -242,7 +267,21 @@ function AreaCode() {
     return selected.includes(select)
   }
 
-  console.log(areaCode)
+  const getNameGroup = () => {
+    const { set_name, included, excluded } = SetBelonging(patterns, areaCode)
+    let name = set_name
+    if (included.length > 0) {
+      name = name + '-COM_' + included.join('_')
+    }
+    if (excluded.length > 0) {
+      name = name + '-SEM_' + excluded.join('_')
+    }
+    return name
+  }
+
+  useEffect(() => {
+    console.log(areaCode, getNameGroup())
+  }, [areaCode])
 
   return (
     <Grid spacing={1} container>
@@ -254,8 +293,8 @@ function AreaCode() {
             </ListSubheader>
           }
         >
-          {Object.entries(padroes).map(([key]) => (
-            <ListItem key={key} disablePadding>
+          {Object.entries(patterns).map(([key]) => (
+            <ListItem key={key} disablePadding selected={pattern === key}>
               <ListItemButton onClick={() => handleChangePattern(key)}>
                 <ListItemText primary={key} />
               </ListItemButton>
@@ -268,7 +307,7 @@ function AreaCode() {
           <Stack style={{ height: '100%' }} direction='column' justifyContent='space-between' spacing={1}>
             <Typography variant='body2' style={{ padding: '16px' }}>{pattern}</Typography>
             <Grid container spacing={0.5}>
-              {padroes[pattern].map((value) => (
+              {patterns[pattern].map((value) => (
                 <Grid key={value} item>
                   <Chip
                     label={value}
@@ -283,171 +322,49 @@ function AreaCode() {
               fullWidth
               variant='contained'
               size='small'
+              disabled={selected.length === 0}
               endIcon={<ArrowRightAltIcon />}
-              onClick={handleUsePattern}
+              onClick={handleAddAreaCode}
             >
               Usar DDDs
             </ButtonVivo>
           </Stack>
-
         ) : (
-          null
+          <Stack style={{ height: '100%' }} direction='column' justifyContent='center' alignItems='center'>
+            <Typography color='GrayText' component='span'>Selecione um Grupo de DDD</Typography>
+          </Stack>
         )}
-
       </Grid>
       <Grid item sm={4}>
-
+        {pattern ? (
+          <Stack style={{ height: '100%' }} direction='column' justifyContent='space-between' spacing={1}>
+            {areaCode.length > 0 ? (
+              <Typography noWrap title={getNameGroup()} variant='body2' style={{ padding: '16px' }}>{getNameGroup()}</Typography>
+            ) : (
+              <Typography noWrap title='Clique em usar DDDs' variant='body2' style={{ padding: '16px' }}>Clique em usar DDDs</Typography>
+            )}
+            <Typography component='span' align='center'>
+              {areaCode.sort((a, b) => a - b).join(', ')}
+            </Typography>
+            <ButtonVivo
+              fullWidth
+              variant='outlined'
+              size='small'
+              disabled={areaCode.length === 0}
+              endIcon={<CloseIcon />}
+              onClick={handleRemoveAreaCode}
+            >
+              Remover todos os DDDs
+            </ButtonVivo>
+          </Stack>
+        ) : (
+          <Stack style={{ height: '100%' }} direction='column' justifyContent='center' alignItems='center'>
+            <Typography color='GrayText' component='span'>Selecione um Grupo de DDD</Typography>
+          </Stack>
+        )}
       </Grid>
     </Grid >
   )
 }
 
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';
-import ListItemButton from '@mui/material/ListItemButton';
-import ListSubheader from '@mui/material/ListSubheader';
-import Checkbox from '@mui/material/Checkbox';
-import Button from '@mui/material/Button';
-import Paper from '@mui/material/Paper';
-import Chip from '@mui/material/Chip';
-import Stack from '@mui/material/Stack';
-import ArrowRightAltIcon from '@mui/icons-material/ArrowRightAlt';
 
-import ButtonVivo from './styled/ButtonVivo'
-
-function not(a, b) {
-  return a.filter((value) => b.indexOf(value) === -1);
-}
-
-function intersection(a, b) {
-  return a.filter((value) => b.indexOf(value) !== -1);
-}
-
-function TransferList() {
-  const [checked, setChecked] = React.useState([]);
-  const [left, setLeft] = React.useState([0, 1, 2, 3, 100, 101, 102, 103, 104, 105]);
-  const [right, setRight] = React.useState([4, 5, 6, 7]);
-
-  const leftChecked = intersection(checked, left);
-  const rightChecked = intersection(checked, right);
-
-  const handleToggle = (value) => () => {
-    const currentIndex = checked.indexOf(value);
-    const newChecked = [...checked];
-
-    if (currentIndex === -1) {
-      newChecked.push(value);
-    } else {
-      newChecked.splice(currentIndex, 1);
-    }
-
-    setChecked(newChecked);
-  };
-
-  const handleAllRight = () => {
-    setRight(right.concat(left));
-    setLeft([]);
-  };
-
-  const handleCheckedRight = () => {
-    setRight(right.concat(leftChecked));
-    setLeft(not(left, leftChecked));
-    setChecked(not(checked, leftChecked));
-  };
-
-  const handleCheckedLeft = () => {
-    setLeft(left.concat(rightChecked));
-    setRight(not(right, rightChecked));
-    setChecked(not(checked, rightChecked));
-  };
-
-  const handleAllLeft = () => {
-    setLeft(left.concat(right));
-    setRight([]);
-  };
-
-  const customList = (items) => (
-    <Paper sx={{ width: 200, height: 230, overflow: 'auto' }}>
-      <List dense component="div" role="list">
-        {items.map((value) => {
-          const labelId = `transfer-list-item-${value}-label`;
-
-          return (
-            <ListItem
-              key={value}
-              role="listitem"
-              button
-              onClick={handleToggle(value)}
-            >
-              <ListItemIcon>
-                <Checkbox
-                  checked={checked.indexOf(value) !== -1}
-                  tabIndex={-1}
-                  disableRipple
-                  inputProps={{
-                    'aria-labelledby': labelId,
-                  }}
-                />
-              </ListItemIcon>
-              <ListItemText id={labelId} primary={`List item ${value + 1}`} />
-            </ListItem>
-          );
-        })}
-        <ListItem />
-      </List>
-    </Paper>
-  );
-
-  return (
-    <Grid container spacing={2} justifyContent="center" alignItems="center">
-      <Grid item>{customList(left)}</Grid>
-      <Grid item>
-        <Grid container direction="column" alignItems="center">
-          <Button
-            sx={{ my: 0.5 }}
-            variant="outlined"
-            size="small"
-            onClick={handleAllRight}
-            disabled={left.length === 0}
-            aria-label="move all right"
-          >
-            ≫
-          </Button>
-          <Button
-            sx={{ my: 0.5 }}
-            variant="outlined"
-            size="small"
-            onClick={handleCheckedRight}
-            disabled={leftChecked.length === 0}
-            aria-label="move selected right"
-          >
-            &gt;
-          </Button>
-          <Button
-            sx={{ my: 0.5 }}
-            variant="outlined"
-            size="small"
-            onClick={handleCheckedLeft}
-            disabled={rightChecked.length === 0}
-            aria-label="move selected left"
-          >
-            &lt;
-          </Button>
-          <Button
-            sx={{ my: 0.5 }}
-            variant="outlined"
-            size="small"
-            onClick={handleAllLeft}
-            disabled={right.length === 0}
-            aria-label="move all left"
-          >
-            ≪
-          </Button>
-        </Grid>
-      </Grid>
-      <Grid item>{customList(right)}</Grid>
-    </Grid>
-  );
-}
