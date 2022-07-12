@@ -31,12 +31,3 @@ export default function SetBelonging(sets, input) {
 
   return ret
 }
-
-const s = {
-  'PADRAO_1': [1, 2, 3],
-  'PADRAO_2': [3, 4, 5],
-}
-
-const i = [2, 3, 4]
-
-console.log(SetBelonging(s, i))

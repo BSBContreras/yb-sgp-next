@@ -1,19 +1,15 @@
 import React, { useState } from 'react';
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
 
-import ptBR from 'date-fns/locale/pt-BR'
-
-import {
-  Table,
-  TableHead,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableRow
-} from '@mui/material';
-
+import Stack from '@mui/material/Stack';
+import FormGroup from '@mui/material/FormGroup';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Checkbox from '@mui/material/Checkbox';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
+import Button from '@mui/material/Button';
+import Paper from '@mui/material/Paper';
 import Grid from '@mui/material/Grid'
 import TextField from '@mui/material/TextField'
 
@@ -35,60 +31,56 @@ const benefits = {
   '5': 'OUTROS BENEFÍCIOS'
 }
 
-function Benefit({ benefit }) {
+import { segmento, tipo_linha, sistema_origem } from '../dictionary'
 
-  const { benefits } = useSelector(selectGeneral)
+function OptionsRegulation() {
 
-  const [des_regulamento_beneficio, set_des_regulamento_beneficio] = useState(benefits[benefit.id_tipo_beneficio])
+  const [status_options, set_status_options] = useState({
+    'sts_aceite_promocao': 'N',
+    'sts_cons_cupons': 'N',
+    'sts_precendente': 'N',
+    'sts_cons_premios': 'N',
+    'sts_cons_quest': 'N',
+  })
 
-  const dispatch = useDispatch()
-
-  const handleChangeBenefit = des_regulamento_beneficio => {
-    set_des_regulamento_beneficio(des_regulamento_beneficio)
+  const handleChangeStatusOptions = (name) => {
+    const status = status_options[name]
+    if (!status) return
+    let new_status_options = { ...status_options }
+    new_status_options[name] = status == 'N' ? 'S' : 'N'
+    set_status_options(new_status_options)
   }
 
-  const handleBlurBenefit = () => {
-    dispatch(changeDesBenefit([benefit.id_tipo_beneficio, des_regulamento_beneficio]))
+  const getChecked = (name) => {
+    const status = status_options[name]
+    return status && (status == 'S')
   }
 
-  return (
-    <TableRow>
-      <TableCell>
-        {benefit.des_tipo_beneficio}
-      </TableCell>
-      <TableCell>
-        <TextField
-          required
-          fullWidth
-          id='des_regulamento_beneficio'
-          label='Regulamento'
-          onChange={e => handleChangeBenefit(e.target.value)}
-          onBlur={handleBlurBenefit}
-          value={des_regulamento_beneficio}
+  const getFormControl = (name) => (
+    <FormControlLabel
+      label={name}
+      control={
+        <Checkbox
+          checked={getChecked(name)}
+          onChange={() => handleChangeStatusOptions(name)}
         />
-      </TableCell>
-    </TableRow>
+      }
+    />
   )
-}
 
-function Benefits() {
+  const getStatusOptions = () => Object.keys(status_options)
+
   return (
-    <TableContainer>
-      <Table>
-        <TableHead>
-          <TableRow>
-            <TableCell>Benefícios</TableCell>
-            <TableCell>Regulamento</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {Object.entries(benefits).map(([key, value]) => (
-            <Benefit key={key} benefit={{ id_tipo_beneficio: key, des_tipo_beneficio: value }} />
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
-  )
+    <FormGroup>
+      <Grid container>
+        {getStatusOptions().map((option, index) => (
+          <Grid item key={index}>
+            {getFormControl(option)}
+          </Grid>
+        ))}
+      </Grid>
+    </FormGroup>
+  );
 }
 
 function Header() {
@@ -98,66 +90,198 @@ function Header() {
 
   const dispatch = useDispatch()
 
-  const [cod_promocao, set_cod_promocao] = useState(promo.cod_promocao)
-  const [des_promocao, set_des_promocao] = useState(promo.des_promocao)
+  const [des_breve_regulamento_promocao, set_des_breve_regulamento_promocao] = useState(promo.des_breve_regulamento_promocao)
+  const [des_regulamento, set_des_regulamento] = useState(promo.des_regulamento)
 
-  const handleChangeCodPromocao = cod_promocao => {
-    set_cod_promocao(cod_promocao)
+  const handleChangeRegulamentoBreve = des_breve_regulamento_promocao => {
+    set_des_breve_regulamento_promocao(des_breve_regulamento_promocao)
   }
 
-  const handleChangeDesPromocao = des_promocao => {
-    set_des_promocao(des_promocao)
+  const handleChangeRegulamentoLongo = des_regulamento => {
+    set_des_regulamento(des_regulamento)
   }
 
-  const handleBlurCodPromocao = () => {
-    dispatch(changeCodPromocao(cod_promocao))
+  const handleBlurRegulamentoBreve = () => {
+    // dispatch(changeCodPromocao(des_breve_regulamento_promocao))
   }
 
-  const handleBlurDesPromocao = () => {
-    dispatch(changeDesPromocao(des_promocao))
-  }
-
-  const handleChangeStartDate = newValue => {
-    dispatch(changeStartDate(newValue))
-  }
-
-  const handleChangeFinalDate = newValue => {
-    dispatch(changeFinalDate(newValue))
+  const handleBlurRegulamentoLongo = () => {
+    // dispatch(changeDesPromocao(des_regulamento))
   }
 
   return (
-    <Grid container spacing={1}>
-      <Grid item xs={12}>
-        <TextField
-          required
-          fullWidth
-          id='cod_promocao'
-          label='Código da Promoção'
-          onChange={e => handleChangeCodPromocao(e.target.value)}
-          onBlur={handleBlurCodPromocao}
-          value={cod_promocao}
-        />
-      </Grid>
-      <Grid item xs={12}>
-        <TextField
-          required
-          fullWidth
-          id='des_promocao'
-          label='Nome da Promoção'
-          onChange={e => handleChangeDesPromocao(e.target.value)}
-          onBlur={handleBlurDesPromocao}
-          value={des_promocao}
-        />
-      </Grid>
-    </Grid>
+    <Stack spacing={1}>
+      <TextField
+        required
+        fullWidth
+        multiline
+        rows={2}
+        id='des_breve_regulamento_promocao'
+        label='Regulamento Breve'
+        onChange={e => handleChangeRegulamentoBreve(e.target.value)}
+        onBlur={handleBlurRegulamentoBreve}
+        value={des_breve_regulamento_promocao}
+      />
+      <TextField
+        required
+        fullWidth
+        multiline
+        rows={4}
+        id='des_regulamento'
+        label='Regulamento Longo'
+        onChange={e => handleChangeRegulamentoLongo(e.target.value)}
+        onBlur={handleBlurRegulamentoLongo}
+        value={des_regulamento}
+      />
+    </Stack>
   )
+}
+
+function not(a, b) {
+  return a.filter((value) => b.indexOf(value) === -1);
+}
+
+function intersection(a, b) {
+  return a.filter((value) => b.indexOf(value) !== -1);
+}
+
+function TransferList({ options }) {
+  const [checked, setChecked] = React.useState([]);
+  const [left, setLeft] = React.useState(Object.keys(options));
+  const [right, setRight] = React.useState([]);
+
+  const leftChecked = intersection(checked, left);
+  const rightChecked = intersection(checked, right);
+
+  const handleToggle = (value) => () => {
+    const currentIndex = checked.indexOf(value);
+    const newChecked = [...checked];
+
+    if (currentIndex === -1) {
+      newChecked.push(value);
+    } else {
+      newChecked.splice(currentIndex, 1);
+    }
+
+    setChecked(newChecked);
+  };
+
+  const handleAllRight = () => {
+    setRight(right.concat(left));
+    setLeft([]);
+  };
+
+  const handleCheckedRight = () => {
+    setRight(right.concat(leftChecked));
+    setLeft(not(left, leftChecked));
+    setChecked(not(checked, leftChecked));
+  };
+
+  const handleCheckedLeft = () => {
+    setLeft(left.concat(rightChecked));
+    setRight(not(right, rightChecked));
+    setChecked(not(checked, rightChecked));
+  };
+
+  const handleAllLeft = () => {
+    setLeft(left.concat(right));
+    setRight([]);
+  };
+
+  const customList = (items) => (
+    <Paper sx={{ width: '100%', height: 230, overflow: 'auto' }}>
+      <List dense component="div" role="list">
+        {items.map((value) => {
+          const labelId = `transfer-list-item-${value}-label`;
+
+          return (
+            <ListItem
+              key={value}
+              role="listitem"
+              button
+              onClick={handleToggle(value)}
+            >
+              <ListItemIcon>
+                <Checkbox
+                  checked={checked.indexOf(value) !== -1}
+                  tabIndex={-1}
+                  disableRipple
+                  inputProps={{
+                    'aria-labelledby': labelId,
+                  }}
+                />
+              </ListItemIcon>
+              <ListItemText id={labelId} primary={value} />
+            </ListItem>
+          );
+        })}
+        <ListItem />
+      </List>
+    </Paper>
+  );
+
+  return (
+    <Grid container spacing={2} justifyContent="center" alignItems="center">
+      <Grid sm={5} item>{customList(left)}</Grid>
+      <Grid sm={2} item>
+        <Grid container direction="column" alignItems="center">
+          <Button
+            sx={{ my: 0.5 }}
+            variant="outlined"
+            size="small"
+            onClick={handleAllRight}
+            disabled={left.length === 0}
+            aria-label="move all right"
+          >
+            ≫
+          </Button>
+          <Button
+            sx={{ my: 0.5 }}
+            variant="outlined"
+            size="small"
+            onClick={handleCheckedRight}
+            disabled={leftChecked.length === 0}
+            aria-label="move selected right"
+          >
+            &gt;
+          </Button>
+          <Button
+            sx={{ my: 0.5 }}
+            variant="outlined"
+            size="small"
+            onClick={handleCheckedLeft}
+            disabled={rightChecked.length === 0}
+            aria-label="move selected left"
+          >
+            &lt;
+          </Button>
+          <Button
+            sx={{ my: 0.5 }}
+            variant="outlined"
+            size="small"
+            onClick={handleAllLeft}
+            disabled={right.length === 0}
+            aria-label="move all left"
+          >
+            ≪
+          </Button>
+        </Grid>
+      </Grid>
+      <Grid sm={5} item>{customList(right)}</Grid>
+    </Grid>
+  );
 }
 
 export default function General() {
   return (
     <React.Fragment>
       <Header />
-      <Benefits />
+      <OptionsRegulation />
+      <Stack spacing={2} alignItems='center'>
+        <TransferList options={tipo_linha} />
+        <TransferList options={segmento} />
+        <TransferList options={sistema_origem} />
+      </Stack>
     </React.Fragment>
   )
 }

@@ -341,7 +341,9 @@ function AreaCode() {
             {areaCode.length > 0 ? (
               <Typography noWrap title={getNameGroup()} variant='body2' style={{ padding: '16px' }}>{getNameGroup()}</Typography>
             ) : (
-              <Typography noWrap title='Clique em usar DDDs' variant='body2' style={{ padding: '16px' }}>Clique em usar DDDs</Typography>
+              <Stack style={{ height: '100%' }} direction='column' justifyContent='center' alignItems='center'>
+                <Typography color='GrayText' component='span'>Clique em usar DDDs</Typography>
+              </Stack>
             )}
             <Typography component='span' align='center'>
               {areaCode.sort((a, b) => a - b).join(', ')}
