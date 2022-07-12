@@ -160,3 +160,11 @@ export const translate_questions = {
   "SMS": "COMPL. SMS",
   "STEPS PROMOCIONAIS": "COMPL. TARIFAS"
 }
+
+export const patterns = {
+  'PADRAO_1': [11, 12, 13, 14, 15, 17, 18, 19, 22, 24, 25, 27, 28, 31, 32, 35, 37, 38, 51, 53, 54, 55, 64, 67, 73, 74, 75, 77, 79, 92, 93, 94, 95, 96],
+  'PADRAO_2': [21, 33, 34, 41, 43, 44, 45, 46, 47, 48, 49, 61, 62, 71, 91],
+  'AGRESSIVO': [42, 82, 83, 84, 87, 88, 89],
+  'SUPER_AGRESSIVO': [16, 63, 65, 66, 68, 69, 81, 85, 86, 97, 98, 99],
+  'SANTA_CATARINA': [47, 48, 49]
+}

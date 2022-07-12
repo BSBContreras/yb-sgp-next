@@ -16,7 +16,8 @@ export const slice = createSlice({
       '3': '',
       '4': '',
       '5': ''
-    }
+    },
+    areaCode: [11, 12, 13]
   },
   reducers: {
     changeCodPromocao(state, { payload }) {
@@ -40,6 +41,9 @@ export const slice = createSlice({
       const [id_tipo_beneficio, des_regulamento_beneficio] = payload
       newBenefits[id_tipo_beneficio] = des_regulamento_beneficio
       return { ...state, benefits: newBenefits }
+    },
+    changeAreaCode(state, { payload }) {
+      return { ...state, areaCode: payload.sort((a, b) => a - b) }
     }
   }
 })
@@ -50,7 +54,8 @@ export const {
   changeDesPromocao,
   changeStartDate,
   changeFinalDate,
-  changeDesBenefit
+  changeDesBenefit,
+  changeAreaCode
 } = slice.actions
 
 export const selectGeneral = state => state.general

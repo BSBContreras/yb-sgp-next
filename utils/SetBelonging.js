@@ -19,6 +19,18 @@ function get(sets, set_name, input) {
   }
 }
 
+export const getNameGroup = (patterns, areaCode) => {
+  const { set_name, included, excluded } = SetBelonging(patterns, areaCode)
+  let name = set_name
+  if (included.length > 0) {
+    name = name + '-COM_' + included.join('_')
+  }
+  if (excluded.length > 0) {
+    name = name + '-SEM_' + excluded.join('_')
+  }
+  return name
+}
+
 export default function SetBelonging(sets, input) {
 
   let ret = { set_name: '', included: { length: Infinity }, excluded: { length: Infinity } }

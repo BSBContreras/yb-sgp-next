@@ -31,7 +31,9 @@ import CloseIcon from '@mui/icons-material/Close';
 
 import ButtonVivo from './styled/ButtonVivo'
 
-import SetBelonging from '../utils/SetBelonging';
+import { getNameGroup } from '../utils/SetBelonging';
+
+import { patterns } from '../dictionary'
 
 import { useDispatch, useSelector } from 'react-redux';
 import {
@@ -41,6 +43,7 @@ import {
   changeStartDate,
   changeFinalDate,
   changeDesBenefit,
+  changeAreaCode,
   selectGeneral
 } from '../redux/GeneralSlice';
 
@@ -212,29 +215,18 @@ function Header() {
   )
 }
 
-export default function General() {
-  return (
-    <React.Fragment>
-      <Header />
-      <AreaCode />
-      <Benefits />
-    </React.Fragment>
-  )
-}
-
-const patterns = {
-  'PADRAO_1': [11, 12, 13, 14, 15, 17, 18, 19, 22, 24, 25, 27, 28, 31, 32, 35, 37, 38, 51, 53, 54, 55, 64, 67, 73, 74, 75, 77, 79, 92, 93, 94, 95, 96],
-  'PADRAO_2': [21, 33, 34, 41, 43, 44, 45, 46, 47, 48, 49, 61, 62, 71, 91],
-  'AGRESSIVO': [42, 82, 83, 84, 87, 88, 89],
-  'SUPER_AGRESSIVO': [16, 63, 65, 66, 68, 69, 81, 85, 86, 97, 98, 99],
-  'SANTA_CATARINA': [47, 48, 49]
-}
-
 function AreaCode() {
 
-  const [pattern, setPattern] = useState('')
-  const [selected, setSelected] = useState([])
-  const [areaCode, setAreaCode] = useState([])
+  const useGetNameGroup = () => {
+    return getNameGroup(patterns, areaCode)
+  }
+
+  const { areaCode } = useSelector(selectGeneral)
+
+  const [pattern, setPattern] = useState(useGetNameGroup())
+  const [selected, setSelected] = useState(areaCode)
+
+  const dispatch = useDispatch()
 
   const handleChangePattern = (pattern) => {
     setPattern(pattern)
@@ -255,33 +247,17 @@ function AreaCode() {
   }
 
   const handleRemoveAreaCode = () => {
-    setAreaCode([])
+    dispatch(changeAreaCode([]))
     setSelected(patterns[pattern])
   }
 
   const handleAddAreaCode = () => {
-    setAreaCode(prev => _.union(prev, selected))
+    dispatch(changeAreaCode(_.union(areaCode, selected)))
   }
 
   const isAreaCodeSelected = (select) => {
     return selected.includes(select)
   }
-
-  const getNameGroup = () => {
-    const { set_name, included, excluded } = SetBelonging(patterns, areaCode)
-    let name = set_name
-    if (included.length > 0) {
-      name = name + '-COM_' + included.join('_')
-    }
-    if (excluded.length > 0) {
-      name = name + '-SEM_' + excluded.join('_')
-    }
-    return name
-  }
-
-  useEffect(() => {
-    console.log(areaCode, getNameGroup())
-  }, [areaCode])
 
   return (
     <Grid spacing={1} container>
@@ -305,18 +281,20 @@ function AreaCode() {
       <Grid item sm={4}>
         {pattern ? (
           <Stack style={{ height: '100%' }} direction='column' justifyContent='space-between' spacing={1}>
-            <Typography variant='body2' style={{ padding: '16px' }}>{pattern}</Typography>
+            <Typography variant='body2' style={{ padding: '16px' }}>{patterns[pattern] ? pattern : 'Padrão'}</Typography>
             <Grid container spacing={0.5}>
-              {patterns[pattern].map((value) => (
-                <Grid key={value} item>
-                  <Chip
-                    label={value}
-                    color='primary'
-                    variant={isAreaCodeSelected(value) ? 'filled' : 'outlined'}
-                    onClick={() => handleChangeSelected(value)}
-                  />
-                </Grid>
-              ))}
+              {patterns[pattern] ? (
+                patterns[pattern].map((value) => (
+                  <Grid key={value} item>
+                    <Chip
+                      label={value}
+                      color='primary'
+                      variant={isAreaCodeSelected(value) ? 'filled' : 'outlined'}
+                      onClick={() => handleChangeSelected(value)}
+                    />
+                  </Grid>
+                ))
+              ) : ('Padrão Fora das Definições')}
             </Grid>
             <ButtonVivo
               fullWidth
@@ -339,14 +317,14 @@ function AreaCode() {
         {pattern ? (
           <Stack style={{ height: '100%' }} direction='column' justifyContent='space-between' spacing={1}>
             {areaCode.length > 0 ? (
-              <Typography noWrap title={getNameGroup()} variant='body2' style={{ padding: '16px' }}>{getNameGroup()}</Typography>
+              <Typography noWrap title={useGetNameGroup()} variant='body2' style={{ padding: '16px' }}>{useGetNameGroup()}</Typography>
             ) : (
               <Stack style={{ height: '100%' }} direction='column' justifyContent='center' alignItems='center'>
                 <Typography color='GrayText' component='span'>Clique em usar DDDs</Typography>
               </Stack>
             )}
             <Typography component='span' align='center'>
-              {areaCode.sort((a, b) => a - b).join(', ')}
+              {areaCode.join(', ')}
             </Typography>
             <ButtonVivo
               fullWidth
@@ -369,4 +347,12 @@ function AreaCode() {
   )
 }
 
-
+export default function General() {
+  return (
+    <React.Fragment>
+      <Header />
+      <AreaCode />
+      <Benefits />
+    </React.Fragment>
+  )
+}
