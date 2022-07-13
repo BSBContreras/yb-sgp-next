@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import Stack from '@mui/material/Stack';
 import FormGroup from '@mui/material/FormGroup';
@@ -15,40 +15,27 @@ import TextField from '@mui/material/TextField'
 
 import { useDispatch, useSelector } from 'react-redux';
 import {
-  changeCodPromocao,
-  changeDesPromocao,
-  changeStartDate,
-  changeFinalDate,
-  changeDesBenefit,
-  selectGeneral
-} from '../redux/GeneralSlice';
-
-const benefits = {
-  '1': 'INTERNET',
-  '2': 'SMS',
-  '3': 'LIGAÇÕES DE VIVO - VIVO',
-  '4': 'LIGAÇÕES OUTRAS OPERADORAS',
-  '5': 'OUTROS BENEFÍCIOS'
-}
+  handleChangeRegulation,
+  handleChangeOptions,
+  handleChangeLineType,
+  handleChangeSegment,
+  handleChangeSourceSystem,
+  selectRegulation
+} from '../redux/RegulationSlice';
 
 import { segmento, tipo_linha, sistema_origem } from '../dictionary'
 
 function OptionsRegulation() {
 
-  const [status_options, set_status_options] = useState({
-    'sts_aceite_promocao': 'N',
-    'sts_cons_cupons': 'N',
-    'sts_precendente': 'N',
-    'sts_cons_premios': 'N',
-    'sts_cons_quest': 'N',
-  })
+  const { options: status_options } = useSelector(selectRegulation)
+
+  const dispatch = useDispatch()
 
   const handleChangeStatusOptions = (name) => {
     const status = status_options[name]
-    if (!status) return
-    let new_status_options = { ...status_options }
+    const new_status_options = {}
     new_status_options[name] = status == 'N' ? 'S' : 'N'
-    set_status_options(new_status_options)
+    dispatch(handleChangeOptions(new_status_options))
   }
 
   const getChecked = (name) => {
@@ -85,28 +72,19 @@ function OptionsRegulation() {
 
 function Header() {
 
-  const { promo } = useSelector(selectGeneral)
-  const { dtc_inicial, dtc_final } = promo
+  const { regulation } = useSelector(selectRegulation)
+  const { des_breve_regulamento_promocao, des_regulamento } = regulation
 
   const dispatch = useDispatch()
 
-  const [des_breve_regulamento_promocao, set_des_breve_regulamento_promocao] = useState(promo.des_breve_regulamento_promocao)
-  const [des_regulamento, set_des_regulamento] = useState(promo.des_regulamento)
-
-  const handleChangeRegulamentoBreve = des_breve_regulamento_promocao => {
-    set_des_breve_regulamento_promocao(des_breve_regulamento_promocao)
+  const handleBlurRegulamentoBreve = event => {
+    const { value } = event.target
+    dispatch(handleChangeRegulation({ des_breve_regulamento_promocao: value }))
   }
 
-  const handleChangeRegulamentoLongo = des_regulamento => {
-    set_des_regulamento(des_regulamento)
-  }
-
-  const handleBlurRegulamentoBreve = () => {
-    // dispatch(changeCodPromocao(des_breve_regulamento_promocao))
-  }
-
-  const handleBlurRegulamentoLongo = () => {
-    // dispatch(changeDesPromocao(des_regulamento))
+  const handleBlurRegulamentoLongo = event => {
+    const { value } = event.target
+    dispatch(handleChangeRegulation({ des_regulamento: value }))
   }
 
   return (
@@ -118,9 +96,9 @@ function Header() {
         rows={2}
         id='des_breve_regulamento_promocao'
         label='Regulamento Breve'
-        onChange={e => handleChangeRegulamentoBreve(e.target.value)}
+        // onChange={e => handleChangeRegulationDes(e.target.value)}
         onBlur={handleBlurRegulamentoBreve}
-        value={des_breve_regulamento_promocao}
+        defaultValue={des_breve_regulamento_promocao}
       />
       <TextField
         required
@@ -129,9 +107,9 @@ function Header() {
         rows={4}
         id='des_regulamento'
         label='Regulamento Longo'
-        onChange={e => handleChangeRegulamentoLongo(e.target.value)}
+        // onChange={e => handleChangeRegulationDes(e.target.value)}
         onBlur={handleBlurRegulamentoLongo}
-        value={des_regulamento}
+        defaultValue={des_regulamento}
       />
     </Stack>
   )
@@ -145,10 +123,10 @@ function intersection(a, b) {
   return a.filter((value) => b.indexOf(value) !== -1);
 }
 
-function TransferList({ options }) {
+function TransferList({ options, selected: right, onChangeSelected: setRight }) {
+
   const [checked, setChecked] = React.useState([]);
-  const [left, setLeft] = React.useState(Object.keys(options));
-  const [right, setRight] = React.useState([]);
+  const [left, setLeft] = React.useState(not(options, right));
 
   const leftChecked = intersection(checked, left);
   const rightChecked = intersection(checked, right);
@@ -272,15 +250,32 @@ function TransferList({ options }) {
   );
 }
 
-export default function General() {
+export default function Regulation() {
+
+  const { lineType, segment, sourceSystem } = useSelector(selectRegulation)
+
+  const dispatch = useDispatch()
+
+  const onChangeLineType = newLineTypes => {
+    dispatch(handleChangeLineType(newLineTypes))
+  }
+
+  const onChangeSegments = newSegments => {
+    dispatch(handleChangeSegment(newSegments))
+  }
+
+  const onChangeSourceSystems = newSourceSystems => {
+    dispatch(handleChangeSourceSystem(newSourceSystems))
+  }
+
   return (
     <React.Fragment>
       <Header />
       <OptionsRegulation />
       <Stack spacing={2} alignItems='center'>
-        <TransferList options={tipo_linha} />
-        <TransferList options={segmento} />
-        <TransferList options={sistema_origem} />
+        <TransferList options={Object.keys(tipo_linha)} selected={lineType} onChangeSelected={onChangeLineType} />
+        <TransferList options={Object.keys(segmento)} selected={segment} onChangeSelected={onChangeSegments} />
+        <TransferList options={Object.keys(sistema_origem)} selected={sourceSystem} onChangeSelected={onChangeSourceSystems} />
       </Stack>
     </React.Fragment>
   )
