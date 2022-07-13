@@ -16,6 +16,9 @@ import MenuItem from '@mui/material/MenuItem';
 import { useEffect, useState } from 'react';
 
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
+import { useDispatch } from 'react-redux';
+
+import { handleChangeOnlineParam, selectTechnical } from '../redux/TechnicalSlice'
 
 const defaults = {
   cod_ip: {
@@ -58,6 +61,8 @@ const servers = {
 
 export default function Technical({ handleChangeState }) {
 
+  const dispatch = useDispatch()
+
   const [cod_ip, set_cod_ip] = useState(defaults.cod_ip.getDefault()) // PreProd Default
   const [num_porta, set_num_porta] = useState(defaults.num_porta.getDefault(cod_ip)) // 8004 Default
   const [num_max_tent, set_num_max_tent] = useState(defaults.num_max_tent.getDefault()) // 2 Default
@@ -72,6 +77,11 @@ export default function Technical({ handleChangeState }) {
           cod_ip, num_porta, num_max_tent, num_tent, num_tempo_tent, num_tempo_timeout
         }
       })
+    }
+    if (dispatch) {
+      dispatch(handleChangeOnlineParam({
+        cod_ip, num_porta, num_max_tent, num_tent, num_tempo_tent, num_tempo_timeout
+      }))
     }
   }, [cod_ip, num_porta, num_max_tent, num_tent, num_tempo_tent, num_tempo_timeout])
 

@@ -81,12 +81,10 @@ export default function App() {
   const buildBridgeExcelToSgp = async () => {
     const [file] = inputRef.current.files
     const promos = await readExcelPromo(file)
-    // console.log(promos)
     setPromotions(BridgeExcelToSgp(promos, opt_tech))
   }
 
   const buildBridgeSgpToSql = () => {
-    console.log(promotions)
     const str = BridgeSgpToSql(promotions)
     setSql(str.PADRAO_1)
   }

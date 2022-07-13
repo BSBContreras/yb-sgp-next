@@ -23,10 +23,22 @@ import AddIcon from '@mui/icons-material/Add';
 
 const categoria_pergunta = {
   '1': 'VALOR PROMOCAO',
-  '2': 'SMS',
-  '3': 'DDD',
-  '4': 'Colab'
+  '2': 'BENEFICIOS',
+  '3': 'FRANQUIA',
+  '4': 'VELOCIDADE DOWNLOAD',
+  '5': 'VELOCIDADE UPLOAD',
+  '6': 'INTERNET',
+  '7': 'MINUTOS VIVO',
+  '8': 'MINUTOS OUTRAS OPERADORAS',
+  '9': 'TARIFAÇÃO MINUTOS',
+  '10': 'MINUTOS',
+  '11': 'SMS VIVO',
+  '12': 'SMS OUTRAS OPERADORAS',
+  '13': 'SMS TARIFAÇÃO',
+  '14': 'SMS',
+  '15': 'TARIFAS',
 }
+
 
 function Question({ question }) {
 

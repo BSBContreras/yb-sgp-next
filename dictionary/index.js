@@ -78,7 +78,7 @@ export const tipo_linha = {
   'LINX': 4337,
 }
 
-export const get_region_from_ddd = {
+export const region = {
   '79': 'BA',
   '77': 'BA',
   '75': 'BA',

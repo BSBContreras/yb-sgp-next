@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 
 import Stack from '@mui/material/Stack';
 import FormGroup from '@mui/material/FormGroup';
@@ -96,7 +96,6 @@ function Header() {
         rows={2}
         id='des_breve_regulamento_promocao'
         label='Regulamento Breve'
-        // onChange={e => handleChangeRegulationDes(e.target.value)}
         onBlur={handleBlurRegulamentoBreve}
         defaultValue={des_breve_regulamento_promocao}
       />
@@ -107,7 +106,6 @@ function Header() {
         rows={4}
         id='des_regulamento'
         label='Regulamento Longo'
-        // onChange={e => handleChangeRegulationDes(e.target.value)}
         onBlur={handleBlurRegulamentoLongo}
         defaultValue={des_regulamento}
       />
@@ -125,8 +123,8 @@ function intersection(a, b) {
 
 function TransferList({ options, selected: right, onChangeSelected: setRight }) {
 
-  const [checked, setChecked] = React.useState([]);
-  const [left, setLeft] = React.useState(not(options, right));
+  const [checked, setChecked] = useState([]);
+  const [left, setLeft] = useState(not(options, right));
 
   const leftChecked = intersection(checked, left);
   const rightChecked = intersection(checked, right);
@@ -280,4 +278,3 @@ export default function Regulation() {
     </React.Fragment>
   )
 }
-
