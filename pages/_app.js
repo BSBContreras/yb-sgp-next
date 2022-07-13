@@ -2,7 +2,8 @@ import '../styles/globals.css'
 
 import { createTheme, ThemeProvider } from '@mui/material/styles'
 import { ptBR } from '@mui/x-date-pickers'
-
+import { Provider } from 'react-redux';
+import store from '../redux/store'
 
 const theme = createTheme({
   palette: {
@@ -15,9 +16,12 @@ const theme = createTheme({
 
 function MyApp({ Component, pageProps }) {
   return (
-    <ThemeProvider theme={theme}>
-      <Component {...pageProps} />
-    </ThemeProvider>
+    <Provider store={store}>
+      <ThemeProvider theme={theme}>
+        <Component {...pageProps} />
+      </ThemeProvider>
+    </Provider>
+
   )
 }
 

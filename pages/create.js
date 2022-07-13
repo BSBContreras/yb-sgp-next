@@ -12,12 +12,10 @@ import General from '../components/General'
 import Regulation from '../components/Regulation'
 import BridgeFormToSgp from '../services/BridgeFormToSgp';
 import SyntaxHighlighter from 'react-syntax-highlighter';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { getNameGroup } from '../utils/SetBelonging'
 import { patterns } from '../dictionary'
-
-import { Provider } from 'react-redux';
-import { storeCreate } from '../redux/store'
+import { handleAddPromotions } from '../redux/ApplicationSlice'
 
 const steps = [
   'Informações Gerais',
@@ -37,12 +35,13 @@ const getComponent = index => {
   return components[index]
 }
 
-function StepperCreate() {
+export default function StepperCreate() {
   const [activeStep, setActiveStep] = React.useState(0)
 
   const state = useSelector(state => state)
 
   const router = useRouter()
+  const dispatch = useDispatch()
 
   const getOverviewSgp = () => {
     return BridgeFormToSgp(state, {})
@@ -66,11 +65,7 @@ function StepperCreate() {
     const promotion = {}
     promotion[name] = getOverviewSgp()
 
-    if (typeof window !== 'undefined') {
-      var promotions = JSON.parse(window.localStorage.getItem('promotions') || '{}')
-      promotions = { ...promotions, ...promotion }
-      window.localStorage.setItem('promotions', JSON.stringify(promotions))
-    }
+    dispatch(handleAddPromotions(promotion))
 
     router.push('/app')
   }
@@ -123,13 +118,5 @@ function StepperCreate() {
         )}
       </Box>
     </Container>
-  )
-}
-
-export default function CreateWrapper() {
-  return (
-    <Provider store={storeCreate}>
-      <StepperCreate />
-    </Provider>
   )
 }

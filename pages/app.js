@@ -21,6 +21,8 @@ import readExcelPromo from '../services/readExcel'
 import BridgeExcelToSgp from '../services/BridgeExcelToSgp';
 
 import Grid from '@mui/material/Grid'
+import { useDispatch, useSelector } from 'react-redux';
+import { handleAddPromotions, selectApplication } from '../redux/ApplicationSlice'
 
 function FormDialog({ open, handleSubmit, handleChangeOpen }) {
 
@@ -53,13 +55,15 @@ function FormDialog({ open, handleSubmit, handleChangeOpen }) {
 
 export default function App() {
 
+  const { promotions } = useSelector(selectApplication)
+
   const router = useRouter()
+  const dispatch = useDispatch()
 
   const inputRef = useRef(null)
 
   const [open, setOpen] = useState(false);
   const [opt_tech, set_opt_tech] = useState({})
-  const [promotions, setPromotions] = useState({})
 
   const handleChangeOpen = () => {
     setOpen(prev => !prev);
@@ -71,17 +75,10 @@ export default function App() {
     }
   }, [opt_tech])
 
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const promotions = JSON.parse(window.localStorage.getItem('promotions') || '{}')
-      setPromotions(promotions)
-    }
-  }, [])
-
   const buildBridgeExcelToSgp = async () => {
     const [file] = inputRef.current.files
     const promos = await readExcelPromo(file)
-    setPromotions(prev => ({ ...prev, ...BridgeExcelToSgp(promos, opt_tech) }))
+    dispatch(handleAddPromotions(BridgeExcelToSgp(promos, opt_tech)))
   }
 
   const handleChangeInputFile = async () => {
@@ -101,7 +98,7 @@ export default function App() {
               component="label"
               endIcon={<CloudUploadIcon />}
             >
-              Upload File
+              Enviar Planilha
               <input
                 hidden
                 type="file"

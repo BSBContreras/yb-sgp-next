@@ -3,12 +3,15 @@ import questionnaireReducer from './QuestionnaireSlice'
 import generalReducer from './GeneralSlice'
 import regulationReducer from './RegulationSlice'
 import onlineParamReducer from './TechnicalSlice'
+import applicationReducer from './ApplicationSlice'
 
-export const storeCreate = configureStore({
+export default configureStore({
   reducer: {
     questionnaire: questionnaireReducer,
     general: generalReducer,
     regulation: regulationReducer,
-    technical: onlineParamReducer
+    technical: onlineParamReducer,
+    application: applicationReducer
+
   }
 })
