@@ -2,7 +2,6 @@ import { useRouter } from 'next/router';
 import TabelaPromocoes from '../components/TabelaPromocoes';
 import ButtonVivo from '../components/styled/ButtonVivo';
 
-import DriveFolderUploadIcon from '@mui/icons-material/DriveFolderUpload';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import NoteAddIcon from '@mui/icons-material/NoteAdd';
 import AddIcon from '@mui/icons-material/Add';
@@ -10,7 +9,6 @@ import Container from '@mui/material/Container';
 
 import React, { useState, useRef, useEffect } from 'react';
 import Button from '@mui/material/Button';
-import TextField from '@mui/material/TextField';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
@@ -23,9 +21,6 @@ import readExcelPromo from '../services/readExcel'
 import BridgeExcelToSgp from '../services/BridgeExcelToSgp';
 
 import Grid from '@mui/material/Grid'
-import BridgeSgpToSql from '../services/BridgeSgpToSql';
-
-import SyntaxHighlighter from 'react-syntax-highlighter';
 
 function FormDialog({ open, handleSubmit, handleChangeOpen }) {
 
@@ -56,7 +51,6 @@ function FormDialog({ open, handleSubmit, handleChangeOpen }) {
   );
 }
 
-
 export default function App() {
 
   const router = useRouter()
@@ -66,7 +60,6 @@ export default function App() {
   const [open, setOpen] = useState(false);
   const [opt_tech, set_opt_tech] = useState({})
   const [promotions, setPromotions] = useState({})
-  const [sql, setSql] = useState('')
 
   const handleChangeOpen = () => {
     setOpen(prev => !prev);
@@ -78,15 +71,17 @@ export default function App() {
     }
   }, [opt_tech])
 
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const promotions = JSON.parse(window.localStorage.getItem('promotions') || '{}')
+      setPromotions(promotions)
+    }
+  }, [])
+
   const buildBridgeExcelToSgp = async () => {
     const [file] = inputRef.current.files
     const promos = await readExcelPromo(file)
-    setPromotions(BridgeExcelToSgp(promos, opt_tech))
-  }
-
-  const buildBridgeSgpToSql = () => {
-    const str = BridgeSgpToSql(promotions)
-    setSql(str.PADRAO_1)
+    setPromotions(prev => ({ ...prev, ...BridgeExcelToSgp(promos, opt_tech) }))
   }
 
   const handleChangeInputFile = async () => {
@@ -125,12 +120,7 @@ export default function App() {
           </Grid>
           <Grid item sm={9}></Grid>
           <Grid item sm={3}>
-            <ButtonVivo fullWidth variant="outlined" onClick={buildBridgeSgpToSql} endIcon={<NoteAddIcon />}>Gerar Promocoes</ButtonVivo>
-          </Grid>
-          <Grid item sm={12}>
-            <SyntaxHighlighter language="sql">
-              {sql}
-            </SyntaxHighlighter>
+            <ButtonVivo fullWidth variant="outlined" onClick={() => router.push('/viewsql')} endIcon={<NoteAddIcon />}>Gerar Promocoes</ButtonVivo>
           </Grid>
         </Grid>
       </Container>

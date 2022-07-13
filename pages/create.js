@@ -61,9 +61,17 @@ function StepperCreate() {
   }
 
   const handleFinish = () => {
+
+    const name = getNameGroup(patterns, state.general.areaCode)
+    const promotion = {}
+    promotion[name] = getOverviewSgp()
+
     if (typeof window !== 'undefined') {
-      window.localStorage.setItem(getNameGroup(patterns, state.general.areaCode), JSON(getOverviewSgp()))
+      var promotions = JSON.parse(window.localStorage.getItem('promotions') || '{}')
+      promotions = { ...promotions, ...promotion }
+      window.localStorage.setItem('promotions', JSON.stringify(promotions))
     }
+
     router.push('/app')
   }
 

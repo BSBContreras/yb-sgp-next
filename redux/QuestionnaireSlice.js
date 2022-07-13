@@ -3,13 +3,7 @@ import { createSlice } from '@reduxjs/toolkit'
 export const slice = createSlice({
   name: 'questionnaire',
   initialState: {
-    questions: [
-      {
-        des_categoria_pergunta: 'VALOR PROMOCAO',
-        des_pergunta: 'Qual o valor da minha promoção?',
-        des_resposta: 'R$ 2,00'
-      }
-    ]
+    questions: []
   },
   reducers: {
     pushQuestion(state, { payload }) {

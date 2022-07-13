@@ -17,7 +17,7 @@ export const slice = createSlice({
       '4': '',
       '5': ''
     },
-    areaCode: [11, 12, 13]
+    areaCode: []
   },
   reducers: {
     changeCodPromocao(state, { payload }) {

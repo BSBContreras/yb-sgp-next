@@ -14,9 +14,9 @@ export const slice = createSlice({
       sts_cons_premios: 'N',
       sts_cons_quest: 'N',
     },
-    lineType: ['POS-PAGO CDMA'],
-    segment: ['DIAMANTE1'],
-    sourceSystem: ['URA']
+    lineType: [],
+    segment: [],
+    sourceSystem: []
   },
   reducers: {
     handleChangeRegulation(state, { payload }) {
